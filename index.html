@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joyeux Anniversaire Ma Reine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+        :root {
+            --primary: #900C3F;
+            --secondary: #FFC300;
+            --bg-color: #fdf5f6;
+            --text-color: #333;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Lora', serif;
+            background-color: var(--bg-color);
+            overflow: hidden;
+            /* Empêcher le scroll initialement */
+        }
+
+        /* --- ÉCRAN DE DÉPART (L'ENVELOPPE) --- */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fdf5f6 0%, #f7d6d9 100%);
+            z-index: 100;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background-color: var(--primary);
+            border-radius: 5px;
+            box-shadow: 0 15px 30px rgba(144, 12, 63, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 120px solid #6b072e;
+            z-index: 2;
+            transition: transform 0.5s ease;
+            transform-origin: top;
+        }
+
+        .envelope.open::before {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .envelope::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #a41049;
+            border-right: 160px solid #a41049;
+            border-bottom: 120px solid var(--primary);
+            z-index: 1;
+        }
+
+        .seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #d4a000;
+            transition: opacity 0.3s;
+        }
+
+        .envelope.open .seal {
+            opacity: 0;
+        }
+
+        #blooming-flower {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            z-index: 4;
+            opacity: 0;
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1.5s ease-out;
+            pointer-events: none;
+        }
+
+        .envelope.open #blooming-flower {
+            transform: translate(-50%, -50%) scale(2.5);
+            opacity: 1;
+        }
+
+        .click-text {
+            margin-top: 40px;
+            font-size: 1.8rem;
+            font-family: 'Great Vibes', cursive;
+            color: var(--primary);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+        }
+
+        /* --- PLUIE DE PÉTALES --- */
+        #petal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            overflow: hidden;
+            display: none;
+        }
+
+        .petal {
+            position: absolute;
+            top: -10%;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* --- ÉCRAN PRINCIPAL (LA LETTRE) --- */
+        #main-screen {
+            display: none;
+            width: 100%;
+            min-height: 100%;
+            padding: 50px 20px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #fdf5f6 0%, #f7d6d9 100%);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .letter-card {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 60px 50px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            border: 2px solid #f7d6d9;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M 0 0 L 100 100 M 100 0 L 0 100" stroke="%23f7d6d9" stroke-width="0.5" fill="none" opacity="0.3"/></svg>');
+        }
+
+        .flower-corner {
+            position: absolute;
+            font-size: 45px;
+            opacity: 0.8;
+        }
+
+        .flower-tl {
+            top: 15px;
+            left: 15px;
+        }
+
+        .flower-tr {
+            top: 15px;
+            right: 15px;
+        }
+
+        .flower-bl {
+            bottom: 15px;
+            left: 15px;
+        }
+
+        .flower-br {
+            bottom: 15px;
+            right: 15px;
+        }
+
+        h1.title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+            margin-top: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        h2.subtitle {
+            font-size: 1.1rem;
+            color: #777;
+            text-align: center;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .message-content {
+            font-size: 1.8rem;
+            font-family: 'Dancing Script', cursive;
+            line-height: 1.8;
+            color: #6b072e; /* Un rouge bordeaux profond et romantique */
+            text-align: center;
+            text-shadow: 0px 0px 1px rgba(107, 7, 46, 0.2);
+            min-height: 350px;
+            /* Espace pour le texte */
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: var(--primary);
+            vertical-align: middle;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* --- GALERIE POLAROID --- */
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+
+        #gallery.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 12px 12px 20px 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease, z-index 0.3s;
+            cursor: pointer;
+            width: 220px;
+            position: relative;
+        }
+
+        .polaroid:nth-child(1) {
+            transform: rotate(-5deg);
+        }
+
+        .polaroid:nth-child(2) {
+            transform: rotate(4deg);
+        }
+
+        .polaroid:nth-child(3) {
+            transform: rotate(-3deg);
+        }
+
+        .polaroid:nth-child(4) {
+            transform: rotate(6deg);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg);
+            z-index: 10;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border: 1px solid #eaeaea;
+        }
+
+        .polaroid p {
+            font-family: 'Great Vibes', cursive;
+            text-align: center;
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin: 12px 0 0 0;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .letter-card {
+                padding: 40px 20px;
+            }
+
+            h1.title {
+                font-size: 3rem;
+            }
+
+            .message-content {
+                font-size: 1.1rem;
+                min-height: auto;
+            }
+
+            .polaroid {
+                width: 150px;
+            }
+
+            .polaroid img {
+                height: 150px;
+            }
+
+            .flower-corner {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Audio (Piano Romantique en boucle) -->
+    <!-- Lien vers un audio libre de droits fonctionnel -->
+    <audio id="bg-music" loop>
+        <source src="nastelbom-happy-birthday-471481.mp3" type="audio/mpeg">
+        Votre navigateur ne supporte pas la balise audio.
+    </audio>
+
+    <!-- Écran de départ -->
+    <div id="start-screen">
+        <div class="envelope-wrapper" onclick="openLetter()">
+            <div class="envelope" id="envelope">
+                <div class="seal">💖</div>
+                <div id="blooming-flower">🌺</div>
+            </div>
+            <div class="click-text">✨ Clique pour ouvrir ta lettre, ma Reine ✨</div>
+        </div>
+    </div>
+
+    <!-- Conteneur pour les pétales -->
+    <div id="petal-container"></div>
+
+    <!-- Écran principal de la lettre -->
+    <div id="main-screen">
+        <div class="letter-card">
+            <!-- Coins fleuris -->
+            <div class="flower-corner flower-tl">🌺</div>
+            <div class="flower-corner flower-tr">🌸</div>
+            <div class="flower-corner flower-bl">🌸</div>
+            <div class="flower-corner flower-br">🌺</div>
+
+            <h1 class="title">Joyeux Anniversaire ! 👑</h1>
+            <h2 class="subtitle">14 SEPTEMBRE — POUR SYLLA SALIMATA</h2>
+
+            <div class="message-content">
+                <span id="typewriter-text"></span><span class="cursor" id="cursor"></span>
+            </div>
+
+            <!-- Galerie Photos Polaroid -->
+            <!-- J'utilise les noms de fichiers exacts présents dans votre dossier -->
+            <div id="gallery">
+                <div class="polaroid">
+                    <img src="WhatsApp Image 2026-08-04 at 08.51.30.jpeg" alt="Ma Princesse">
+                    <p>Ma Princesse 🌹</p>
+                </div>
+                <div class="polaroid">
+                    <img src="WhatsApp Image 2026-08-04 at 08.51.30 (2).jpeg" alt="Ma Reine">
+                    <p>Ma Reine 👑</p>
+                </div>
+                <div class="polaroid">
+                    <img src="WhatsApp Image 2026-08-04 at 08.51.30 (3).jpeg" alt="Toi & Moi Forever">
+                    <p>Toi & Moi Forever 💖</p>
+                </div>
+                <div class="polaroid">
+                    <img src="WhatsApp Image 2026-08-04 at 08.51.30 (1).jpeg" alt="Main dans la main">
+                    <p>Main dans la main 🤝</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const message = `Joyeux Anniversaire à l'unique amour de ma vie, ma Reine absolue ! 💖<br><br>Aujourd'hui, le 14 septembre, l'univers tout entier célèbre le jour où la plus belle des étoiles est née. Ta venue au monde a été le plus grand des miracles, car elle m'a permis de te rencontrer.<br><br>Mon bébé, ma puce, mon âme sœur... Tu es l'oxygène que je respire, le soleil de mes matins et la paix de mes nuits. Chaque seconde passée loin de toi me semble une éternité, et chaque instant dans tes bras est un aperçu du paradis. Mon amour pour toi grandit un peu plus chaque jour, d'une manière que je ne pensais même pas possible.<br><br>Ton sourire a le pouvoir de dissiper toutes mes ombres, et ton regard est mon refuge préféré. En ce jour magnifique, je te promets de passer le reste de ma vie à te rendre aussi heureuse que tu me rends. Je te souhaite une montagne de bonheur, une santé de fer et que chacun de tes rêves se transforme en réalité, car tu mérites ce qu'il y a de plus merveilleux sur cette terre.<br><br>Merci d'avoir transformé ma vie, merci d'être toi. Je serai toujours là, comme un bouclier pour te protéger, un soutien pour te relever, et un cœur pour t'aimer inconditionnellement, jusqu'à mon dernier souffle.<br><br>Joyeux anniversaire, mon amour éternel. Je t'aime plus que l'univers tout entier. ♡`;
+
+        let i = 0;
+        let isTyping = false;
+
+        function openLetter() {
+            // Lancer la musique immédiatement pour autoriser la lecture par le navigateur
+            const bgMusic = document.getElementById('bg-music');
+            bgMusic.volume = 0.6;
+            bgMusic.play().catch(e => console.log("Lecture audio bloquée :", e));
+
+            // Animation d'ouverture de l'enveloppe
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('open');
+
+            const startScreen = document.getElementById('start-screen');
+
+            setTimeout(() => {
+                startScreen.style.transform = 'scale(1.5) translateY(-50px)';
+                startScreen.style.opacity = '0';
+
+                setTimeout(() => {
+                    startScreen.style.display = 'none';
+
+                    // Afficher l'écran principal
+                    const mainScreen = document.getElementById('main-screen');
+                    mainScreen.style.display = 'block';
+                    document.body.style.overflow = 'auto'; // Réactiver le scroll
+
+                    // Lancer les pétales
+                    createPetals();
+
+                    // Lancer l'effet d'écriture
+                    if (!isTyping) {
+                        isTyping = true;
+                        setTimeout(typeWriter, 800);
+                    }
+                }, 1000);
+            }, 600);
+        }
+
+        function typeWriter() {
+            const container = document.getElementById("typewriter-text");
+
+            if (i < message.length) {
+                // Gérer les sauts de ligne HTML
+                if (message.charAt(i) === '<') {
+                    if (message.substring(i, i + 4) === '<br>') {
+                        container.innerHTML += '<br>';
+                        i += 4;
+                    }
+                } else {
+                    container.innerHTML += message.charAt(i);
+                    i++;
+                }
+
+                // Vitesse variable, plus douce et ralentie
+                const speed = Math.floor(Math.random() * 50) + 70;
+                setTimeout(typeWriter, speed);
+            } else {
+                document.getElementById('cursor').style.display = 'none';
+                showGallery();
+            }
+        }
+
+        function showGallery() {
+            setTimeout(() => {
+                document.getElementById('gallery').classList.add('visible');
+            }, 500);
+        }
+
+        function createPetals() {
+            const container = document.getElementById('petal-container');
+            container.style.display = 'block';
+
+            const emojis = ['🌸', '🌺', '🌹', '🌷', '✨'];
+            const numberOfPetals = 45;
+
+            for (let j = 0; j < numberOfPetals; j++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                petal.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                petal.style.animationDuration = Math.random() * 6 + 6 + 's'; // 6 à 12 secondes de chute
+                petal.style.fontSize = Math.floor(Math.random() * 15 + 15) + 'px';
+
+                container.appendChild(petal);
+            }
+        }
+    </script>
+</body>
+
+</html>
